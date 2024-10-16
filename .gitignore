@@ -1,0 +1,5 @@
+AI/yolo_env
+AI/models
+AI/output
+AI/lockfile.lck
+pyrightconfig.json
