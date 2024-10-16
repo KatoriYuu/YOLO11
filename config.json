@@ -1,0 +1,14 @@
+{
+  "cam1": {
+    "type": "cam",
+    "username": "usr",
+    "password": "pwd",
+    "ip": "100.100.100.100",
+    "zone": null
+  },
+  "img1": {
+    "type": "image",
+    "path": "/Users/admin/Documents/Projects/CODE/YOLO11/c.jpeg",
+    "zone": null
+  }
+}

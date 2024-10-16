@@ -1,5 +1,5 @@
-AI/yolo_env
-AI/models
-AI/output
-AI/lockfile.lck
+yolo_env
+models
+output
+lockfile.lck
 pyrightconfig.json
