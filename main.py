@@ -18,6 +18,9 @@ json_file_name = ai_dir + "/config.json"
 
 classes = [1, 2, 3, 5, 7]
 conf = 0.2
+
+model = YOLO(ai_dir + "/models/yolo11x.pt")
+
 if torch.backends.mps.is_available():
     device = "mps"
 elif torch.cuda.is_available():
@@ -57,7 +60,6 @@ def predict(cam, classes=[], conf=conf, device="cpu"):
         print("main.py: " + cam + " source not found")
         return
     file_out = os.path.basename(source + ".txt")
-    model = YOLO(ai_dir + "/models/yolo11x.pt")
     counter = dict()
     predictions = model.predict(
         source=source, classes=classes, conf=conf, device=device
@@ -67,7 +69,7 @@ def predict(cam, classes=[], conf=conf, device="cpu"):
         if zone is None:
             zone = [(0, 0), (0, img_shape[1]), img_shape, (img_shape[0], 0)]
         polygon = Polygon(zone)
-        result.show()
+        # result.show()
         for box in result.boxes:
             cls = int(box.cls[0])
             class_name = model.names[cls]
