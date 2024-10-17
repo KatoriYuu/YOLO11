@@ -19,7 +19,6 @@ json_file_name = ai_dir + "/config.json"
 classes = [1, 2, 3, 5, 7]
 conf = 0.2
 
-model = YOLO(ai_dir + "/models/yolo11x.pt")
 
 if torch.backends.mps.is_available():
     device = "mps"
@@ -61,6 +60,7 @@ def predict(cam, classes=[], conf=conf, device="cpu"):
         return
     file_out = os.path.basename(source + ".txt")
     counter = dict()
+    model = YOLO(ai_dir + "/models/yolo11x.pt")
     predictions = model.predict(
         source=source, classes=classes, conf=conf, device=device
     )
