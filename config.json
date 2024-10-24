@@ -23,6 +23,13 @@
       [0.34, 0]
     ]
   },
+  "cam3": {
+    "type": "cam",
+    "username": "admin",
+    "password": "abcd123456789",
+    "ip": "192.168.1.33",
+    "zone": null
+  },
   "cam4": {
     "type": "cam",
     "username": "admin",
@@ -45,7 +52,7 @@
 
   "img1": {
     "type": "image",
-    "path": "/Users/admin/Documents/Projects/CODE/YOLO11/a.jpeg",
+    "path": "/Users/admin/Documents/Projects/CODE/YOLO11/f.jpeg",
     "zone": null
   },
   "img2": {

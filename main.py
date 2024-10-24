@@ -3,6 +3,7 @@ import os
 import threading
 from threading import Thread
 
+import cv2
 import SystemEvent
 import torch
 from shapely.geometry import Point
@@ -27,6 +28,7 @@ elif torch.cuda.is_available():
 
 def json_parse(target):
     source = ""
+    img = None
     zone = None
     with open(json_file_name) as json_file:
         json_obj = json.load(json_file)
@@ -45,24 +47,32 @@ def json_parse(target):
                     + ip
                     + "/Streaming/channels/1/picture"
                 )
+                cap = cv2.VideoCapture(source)
+                if not cap.isOpened():
+                    print("Error reaching", target)
+                    return None, None
+                success, img = cap.read()
+                if not success:
+                    print("Error getting image from cam")
+                    img = None
+                cap.release()
                 zone = obj["zone"]
             elif obj["type"] == "image":
+                img = cv2.imread(source)
                 source = obj["path"]
                 zone = obj["zone"]
-    return source, zone
+    return img, zone
 
 
 def predict(target, classes=[], conf=conf, device="cpu"):
-    source, zone = json_parse(target)
-    if source == "":
+    img, zone = json_parse(target)
+    if img is None:
         print("main.py: " + target + " source not found")
         return
     file_out = os.path.basename(target + ".txt")
     counter = dict()
-    model = YOLO(ai_dir + "/models/yolo11x.pt")
-    predictions = model.predict(
-        source=source, classes=classes, conf=conf, device=device
-    )
+    model = YOLO(ai_dir + "/models/yolo11s.pt")
+    predictions = model.predict(source=img, classes=classes, conf=conf, device=device)
     for result in predictions:
         if zone is None:
             zone = [(0, 0), (0, 1), (1, 1), (1, 0)]
