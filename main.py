@@ -71,7 +71,7 @@ def predict(target, classes=[], conf=conf, device="cpu"):
         return
     file_out = os.path.basename(target + ".txt")
     counter = dict()
-    model = YOLO(ai_dir + "/models/yolo11s.pt")
+    model = YOLO(ai_dir + "/models/171124.pt")
     predictions = model.predict(source=img, classes=classes, conf=conf, device=device)
     for result in predictions:
         if zone is None:
@@ -95,6 +95,7 @@ def predict(target, classes=[], conf=conf, device="cpu"):
         with open(file_out_path, "w") as file:
             for key in counter:
                 print(key, counter[key], file=file)
+    return
 
 
 def main():
