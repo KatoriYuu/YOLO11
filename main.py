@@ -1,7 +1,7 @@
 import json
 import os
 import threading
-from threading import Thread
+from concurrent.futures import ThreadPoolExecutor
 
 import cv2
 import SystemEvent
@@ -58,9 +58,9 @@ def json_parse(target):
                 cap.release()
                 zone = obj["zone"]
             elif obj["type"] == "image":
-                img = cv2.imread(source)
                 source = obj["path"]
                 zone = obj["zone"]
+                img = cv2.imread(source)
     return img, zone
 
 
@@ -99,19 +99,25 @@ def predict(target, classes=[], conf=conf, device="cpu"):
 
 
 def main():
-    while True:
-        invocation = SystemEvent.SystemEvent("invoke")
-        invocation.wait()
-        invocation.clear()
-        with open(json_file_name) as json_file:
-            json_obj = json.load(json_file)
-            for obj in json_obj:
-                event_target = SystemEvent.SystemEvent(obj)
-                event_agent = SystemEvent.SystemEvent("agent-" + obj)
-                if event_target.isSet():
-                    Thread(target=predict, args=(obj, classes, conf)).start()
-                    event_target.clear()
-                    event_agent.set()
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        while True:
+            invocation = SystemEvent.SystemEvent("invoke")
+            invocation.wait()
+            invocation.clear()
+            with open(json_file_name) as json_file:
+                json_obj = json.load(json_file)
+                for obj in json_obj:
+                    event_target = SystemEvent.SystemEvent(obj)
+                    event_agent = SystemEvent.SystemEvent("agent-" + obj)
+                    if event_target.isSet():
+                        future = executor.submit(predict, obj, classes, conf)
+                        try:
+                            future.result(timeout=10)
+                        except TimeoutError:
+                            print("Thread didn't start within 10s, timed out")
+                            future.cancel()
+                        event_target.clear()
+                        event_agent.set()
 
 
 if __name__ == "__main__":
